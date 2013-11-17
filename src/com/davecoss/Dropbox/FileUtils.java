@@ -50,11 +50,14 @@ public class FileUtils {
 	
 	public static DbxEntry[] ls(String query, DbxClient client) throws DbxException {
 		DbxEntry.WithChildren listing = client.getMetadataWithChildren(query);
-        if(listing.entry.isFile()) {
+        if(listing == null) {
+        	return new DbxEntry[]{};
+        }
+		if(listing.entry.isFile()) {
         	return new DbxEntry[]{listing.entry};
         }
 		
-		DbxEntry[] dirents = new DbxEntry.File[listing.children.size()];
+		DbxEntry[] dirents = new DbxEntry[listing.children.size()];
 		int idx = 0;
 		for (DbxEntry child : listing.children) {
             dirents[idx++] = child;
