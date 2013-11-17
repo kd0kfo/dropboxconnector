@@ -1,0 +1,53 @@
+<project>
+
+	<tstamp>
+	    <format property="BUILD_TIME" pattern="yyyy-MM-dd HH:mm"/>
+    </tstamp>
+
+  <property name="lib.dir" value="lib"/>
+  <property name="jar.name" value="dropboxconnector.jar"/>
+
+  <path id="classpath">
+    <fileset dir="${lib.dir}" includes="**/*.jar"/>
+  </path>
+
+  <path id="targetclasspath">
+    <fileset dir="${lib.dir}" includes="**/*.jar"/>
+    <fileset dir="build/jar" includes="*.jar"/>
+  </path>
+
+    <target name="clean">
+        <delete dir="build"/>
+    </target>
+
+    <target name="classpath">
+    	<pathconvert property="classpathexpanded" refid="targetclasspath"/>
+    	<echo message="${classpathexpanded}"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="build/classes"/>
+        <javac srcdir="src" destdir="build/classes" classpathref="classpath" debug="on">
+            <compilerarg value="-Xlint:unchecked" />
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile">
+	    <propertyfile file="build/classes/com/davecoss/Dropbox/build.info">
+			<entry key="build_date" value="${BUILD_TIME}"/>
+			<entry key="version" value="1.0"/>
+	    </propertyfile>
+        <mkdir dir="build/jar"/>
+        <jar destfile="build/jar/${jar.name}" basedir="build/classes">
+	    <fileset dir="src" includes="**/*.java"/>
+            <manifest>
+                <attribute name="Main-Class" value="com.davecoss.Dropbox.CommandLine"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="run" depends="jar">
+      <java fork="true" classpathref="classpath" classpath="build/jar/${jar.name}" classname="com.davecoss.Dropbox.CommandLine"/>
+   </target>
+
+</project>
