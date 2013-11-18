@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 
 import com.dropbox.core.DbxClient;
 import com.dropbox.core.DbxEntry;
@@ -108,7 +110,21 @@ public class CommandLine {
 	        /**/
 	    }
     
+    
+    // Plugin stuff
     public String plugin_protocol() {
     	return "dbx";
+    }
+    
+    public boolean saveuri(InputStream input, int amount_to_write, URI uri) {
+    	DbxClient client;
+		try {
+			client = Connector.connect(new APIKeyStore("appkey.properties"));
+			FileUtils.upload_stream(input, amount_to_write, uri.getPath(), client);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+    	return true;
     }
 }
