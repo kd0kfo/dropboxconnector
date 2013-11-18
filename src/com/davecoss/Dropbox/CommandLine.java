@@ -2,8 +2,6 @@ package com.davecoss.Dropbox;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
 import java.net.URISyntaxException;
 
 import com.dropbox.core.DbxClient;
@@ -117,32 +115,4 @@ public class CommandLine {
 	        /**/
 	    }
     
-    
-    // Plugin stuff
-    public String plugin_protocol() {
-    	return "dbx";
-    }
-    
-    public boolean saveuri(InputStream input, int amount_to_write, URI uri) {
-    	DbxClient client;
-		try {
-			client = Connector.connect(new APIKeyStore("appkey.properties"));
-			FileUtils.upload_stream(input, amount_to_write, uri.getPath(), client);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-    	return true;
-    }
-    
-    public DbxEntry.Folder mkdir(URI newdir) {
-    	DbxClient client;
-    	try {
-			client = Connector.connect(new APIKeyStore("appkey.properties"));
-			return FileUtils.mkdir(newdir.getPath(), client);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-    }
 }
