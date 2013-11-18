@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import com.davecoss.java.BuildInfo;
 import com.dropbox.core.DbxClient;
 import com.dropbox.core.DbxEntry;
 import com.dropbox.core.DbxException;
@@ -59,6 +60,13 @@ public class CommandLine {
     			System.exit(0);
     		}
     		String command = args[0].toLowerCase();
+    		
+    		// Version?
+    		if(command.equals("version")) {
+    			BuildInfo info = new BuildInfo(CommandLine.class);
+	        	System.out.println(info.get_version());
+	        	System.exit(0);
+    		}
     		
     		// Sanity check before connecting.
     		sanity_check(args);

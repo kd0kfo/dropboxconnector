@@ -4,6 +4,7 @@
 	    <format property="BUILD_TIME" pattern="yyyy-MM-dd HH:mm"/>
     </tstamp>
 
+  <property name="version" value="1.0"/>
   <property name="main.class.name" value="com.davecoss.Dropbox.CommandLine"/>
   <property name="plugin.class.name" value="com.davecoss.Dropbox.Plugin"/>
   <property name="build.classes.dir" value="build/classes"/>
@@ -37,12 +38,16 @@
         </javac>
     </target>
 
-    <target name="jar" depends="compile">
-	    <propertyfile file="${build.classes.dir}/com/davecoss/Dropbox/build.info">
+	<target name="buildinfo">
+	    <mkdir dir="${build.classes.dir}"/>
+		<propertyfile file="${build.classes.dir}/com/davecoss/Dropbox/build.info">
 			<entry key="build_date" value="${BUILD_TIME}"/>
-			<entry key="version" value="1.0"/>
-	    </propertyfile>
-        <mkdir dir="${build.jar.dir}"/>
+			<entry key="version" value="${version}"/>
+		</propertyfile>
+	</target>
+	
+    <target name="jar" depends="compile,buildinfo">
+	    <mkdir dir="${build.jar.dir}"/>
         <jar destfile="${build.jar.dir}/${jar.name}" basedir="${build.classes.dir}">
 	    <fileset dir="src" includes="**/*.java"/>
             <manifest>
@@ -51,9 +56,9 @@
         </jar>
     </target>
 
-    <target name="plugin" depends="compile">
+    <target name="plugin" depends="compile,buildinfo">
       <mkdir dir="${build.plugin.dir}"/>
-	   <jar destfile="${build.plugin.dir}/droboxconnector-plugin.jar" basedir="${build.classes.dir}">
+    	<jar destfile="${build.plugin.dir}/droboxconnector-plugin.jar" basedir="${build.classes.dir}">
 	     <zipgroupfileset dir="${lib.dir}" includes="*.jar" /> 
 		  <manifest>
 		      <attribute name="Main-Class" value="${plugin.class.name}"/>
