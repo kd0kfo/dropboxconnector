@@ -13,6 +13,10 @@ import com.dropbox.core.DbxWriteMode;
 
 public class CommandLine {
 	
+	public CommandLine () {
+		
+	}
+	
 	public static void sanity_check(String[] args) {
 		if(args.length == 0) {
 			print_usage();
@@ -103,4 +107,8 @@ public class CommandLine {
 	        }
 	        /**/
 	    }
+    
+    public String plugin_protocol() {
+    	return "dbx";
+    }
 }
