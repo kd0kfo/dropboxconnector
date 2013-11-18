@@ -5,6 +5,7 @@
     </tstamp>
 
   <property name="main.class.name" value="com.davecoss.Dropbox.CommandLine"/>
+  <property name="plugin.class.name" value="com.davecoss.Dropbox.Plugin"/>
   <property name="build.classes.dir" value="build/classes"/>
   <property name="build.jar.dir" value="build/jar"/>
   <property name="build.plugin.dir" value="build/plugin"/>
@@ -55,7 +56,7 @@
 	   <jar destfile="${build.plugin.dir}/droboxconnector-plugin.jar" basedir="${build.classes.dir}">
 	     <zipgroupfileset dir="${lib.dir}" includes="*.jar" /> 
 		  <manifest>
-		      <attribute name="Main-Class" value="${main.class.name}"/>
+		      <attribute name="Main-Class" value="${plugin.class.name}"/>
 		</manifest>
 	   </jar>
     </target>
