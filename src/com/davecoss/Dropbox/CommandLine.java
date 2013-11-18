@@ -1,16 +1,14 @@
 package com.davecoss.Dropbox;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import com.dropbox.core.DbxClient;
 import com.dropbox.core.DbxEntry;
 import com.dropbox.core.DbxException;
-import com.dropbox.core.DbxWriteMode;
 
 
 public class CommandLine {
@@ -41,16 +39,22 @@ public class CommandLine {
 	        	System.exit(1);
 	        }
 	        break;
+		case "mkdir":
+			if(args.length < 2) {
+				System.err.println("Missing directory name.");
+				System.exit(1);
+			}
 		}
 	}
 	
 	public static void print_usage() {
 		System.out.println("Options:");
-		System.out.println("upload <source file> <destination file>");
 		System.out.println("ls [path]");
+		System.out.println("mkdir [path]");
+		System.out.println("upload <source file> <destination file>");
 	}
 	
-    public static void main(String[] args) throws IOException, DbxException {
+    public static void main(String[] args) throws IOException, DbxException, URISyntaxException {
 	       
     		if(args.length == 0 || args[0].equals("help")) {
     			print_usage();
@@ -68,14 +72,6 @@ public class CommandLine {
 	        System.out.println("Linked account: " + client.getAccountInfo().displayName);
 
 	        switch(command.toLowerCase()) {
-	        case "upload":
-	        	File inputFile = new File(args[1]);
-	        	String dest = args[2];
-	        	if(dest.charAt(0) != '/')
-	        		dest = "/" + dest;
-	        	DbxEntry.File outfile = FileUtils.upload_file(inputFile, dest, client);
-	        	System.out.println("Uploaded " + outfile.numBytes + " bytes to " + outfile.name);
-	        	break;
 	        case "ls":
 	        	String query = (args.length > 1) ? args[1] : "/";
 	        	DbxEntry[] dirents = FileUtils.ls(query, client);
@@ -93,6 +89,17 @@ public class CommandLine {
 		        		System.out.println(asfolder.path);
 		        	}
 		        }
+	        	break;
+	        case "mkdir":
+	        	FileUtils.mkdir(args[1], client);
+	        	break;
+	        case "upload":
+	        	File inputFile = new File(args[1]);
+	        	String dest = args[2];
+	        	if(dest.charAt(0) != '/')
+	        		dest = "/" + dest;
+	        	DbxEntry.File outfile = FileUtils.upload_file(inputFile, dest, client);
+	        	System.out.println("Uploaded " + outfile.numBytes + " bytes to " + outfile.name);
 	        	break;
 	        }
 	        
@@ -126,5 +133,16 @@ public class CommandLine {
 			return false;
 		}
     	return true;
+    }
+    
+    public DbxEntry.Folder mkdir(URI newdir) {
+    	DbxClient client;
+    	try {
+			client = Connector.connect(new APIKeyStore("appkey.properties"));
+			return FileUtils.mkdir(newdir.getPath(), client);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
     }
 }

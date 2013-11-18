@@ -64,4 +64,8 @@ public class FileUtils {
         }
 		return dirents;
 	}
+	
+	public static DbxEntry.Folder mkdir(String dir, DbxClient client) throws DbxException {
+		return client.createFolder(dir);
+	}
 }
