@@ -58,7 +58,7 @@
 
     <target name="plugin" depends="compile,buildinfo">
       <mkdir dir="${build.plugin.dir}"/>
-    	<jar destfile="${build.plugin.dir}/droboxconnector-plugin.jar" basedir="${build.classes.dir}">
+    	<jar destfile="${build.plugin.dir}/dropboxconnector-plugin.jar" basedir="${build.classes.dir}">
 	     <zipgroupfileset dir="${lib.dir}" includes="*.jar" /> 
 		  <manifest>
 		      <attribute name="Main-Class" value="${plugin.class.name}"/>
