@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Locale;
 
+import com.davecoss.java.BuildInfo;
 import com.dropbox.core.DbxAppInfo;
 import com.dropbox.core.DbxAuthFinish;
 import com.dropbox.core.DbxClient;
@@ -17,10 +18,12 @@ public class Connector {
 	public static DbxClient connect(APIKeyStore apikey) throws IOException, DbxException {
 		final String APP_KEY = apikey.APP_KEY;
 	    final String APP_SECRET = apikey.APP_SECRET;
+	    
+	    BuildInfo info = new BuildInfo(Connector.class);
 	
 	    DbxAppInfo appInfo = new DbxAppInfo(APP_KEY, APP_SECRET);
 	
-	    DbxRequestConfig config = new DbxRequestConfig("DropboxConnector/1.0",
+	    DbxRequestConfig config = new DbxRequestConfig("DropboxConnector/" + info.get_version(),
 						       Locale.getDefault().toString());
 	    DbxWebAuthNoRedirect webAuth = new DbxWebAuthNoRedirect(config, appInfo);
 	

@@ -1,5 +1,6 @@
 package com.davecoss.Dropbox;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
@@ -11,10 +12,11 @@ import com.dropbox.core.DbxEntry;
 import com.davecoss.java.plugin.PluginException;
 import com.davecoss.java.plugin.PluginInitException;
 
-public class Plugin implements com.davecoss.java.plugin.Plugin {
+public class Plugin implements com.davecoss.java.plugin.StoragePlugin {
 
 	private DbxClient client = null;
 	private final Collection<String> functionlist;
+	private File jarfile = null;
 	
 	public Plugin() {
 		client = null;
@@ -44,26 +46,22 @@ public class Plugin implements com.davecoss.java.plugin.Plugin {
 			client = null;
 	}
 	
-	// Plugin stuff
-    public String plugin_protocol() {
-    	return "dbx";
-    }
-    
-    public boolean saveuri(InputStream input, int amount_to_write, URI uri) {
+	@Override
+    public URI saveuri(InputStream input, int amount_to_write, URI uri) {
     	try {
-			FileUtils.upload_stream(input, amount_to_write, uri.getPath(), client);
-		} catch (Exception e) {
+			DbxEntry.File retval = FileUtils.upload_stream(input, amount_to_write, uri.getPath(), client);
+			return new URI("dbx:" + retval.path);
+    	} catch (Exception e) {
 			e.printStackTrace();
-			return false;
+			return null;
 		}
-    	return true;
     }
     
-    public DbxEntry.Folder mkdir(URI newdir) {
-    	DbxClient client;
+    @Override
+    public URI mkdir(String path) {
     	try {
-			client = Connector.connect(new APIKeyStore("appkey.properties"));
-			return FileUtils.mkdir(newdir.getPath(), client);
+			DbxEntry.Folder retval = FileUtils.mkdir(path, client);
+			return new URI("dbx:" + retval.path);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -73,6 +71,21 @@ public class Plugin implements com.davecoss.java.plugin.Plugin {
 	@Override
 	public boolean has_function(String function_name) throws PluginException {
 		return functionlist != null && functionlist.contains(function_name);
+	}
+
+	@Override
+	public File get_jarfile() {
+		return jarfile;
+	}
+	
+	@Override
+	public File set_jarfile(File jarfile) {
+		return (this.jarfile = jarfile);
+	}
+
+	@Override
+	public String get_protocol() {
+		return "dbx";
 	}
 
 }

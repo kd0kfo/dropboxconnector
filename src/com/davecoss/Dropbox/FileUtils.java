@@ -14,6 +14,9 @@ public class FileUtils {
 
 	
 	public static DbxEntry.File upload_stream(InputStream in, long size, String dest, DbxClient client) throws DbxException, IOException {
+		if(client == null)
+			throw new DbxException("Client not connected.");
+		
 		DbxEntry.File outfile = null;
 		DbxClient.Uploader uploader = client.startUploadFile(dest, DbxWriteMode.force(), size);
         try {
@@ -66,6 +69,9 @@ public class FileUtils {
 	}
 	
 	public static DbxEntry.Folder mkdir(String dir, DbxClient client) throws DbxException {
-		return client.createFolder(dir);
+		DbxEntry.Folder retval = client.createFolder(dir);
+		if(retval == null)
+			retval = client.getMetadata(dir).asFolder();
+		return retval;
 	}
 }
