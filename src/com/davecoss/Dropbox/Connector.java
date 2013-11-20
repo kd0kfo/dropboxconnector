@@ -15,8 +15,6 @@ import com.dropbox.core.DbxWebAuthNoRedirect;
 
 public class Connector {
 	
-	// TODO implement caching of metadata
-	
 	public static DbxClient connect(APIKeyStore apikey) throws IOException, DbxException {
 		final String APP_KEY = apikey.APP_KEY;
 	    final String APP_SECRET = apikey.APP_SECRET;
