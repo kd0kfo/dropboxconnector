@@ -2,7 +2,9 @@ package com.davecoss.Dropbox;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.util.Locale;
 
 import com.davecoss.java.BuildInfo;
@@ -15,7 +17,11 @@ import com.dropbox.core.DbxWebAuthNoRedirect;
 
 public class Connector {
 	
-	public static DbxClient connect(APIKeyStore apikey) throws IOException, DbxException {
+    public static DbxClient connect(APIKeyStore apikey) throws IOException, DbxException {
+	return connect(apikey, System.out, System.in);
+    }
+
+    public static DbxClient connect(APIKeyStore apikey, PrintStream consoleStream, InputStream inputStream) throws IOException, DbxException {
 		final String APP_KEY = apikey.APP_KEY;
 	    final String APP_SECRET = apikey.APP_SECRET;
 	    
@@ -29,10 +35,10 @@ public class Connector {
 	
 	    // Have the user sign in and authorize your app.
 	    String authorizeUrl = webAuth.start();
-	    System.out.println("1. Go to: " + authorizeUrl);
-	    System.out.println("2. Click \"Allow\" (you might have to log in first)");
-	    System.out.println("3. Copy the authorization code.");
-	    String code = new BufferedReader(new InputStreamReader(System.in)).readLine().trim();
+	    consoleStream.println("1. Go to: " + authorizeUrl);
+	    consoleStream.println("2. Click \"Allow\" (you might have to log in first)");
+	    consoleStream.println("3. Copy the authorization code.");
+	    String code = new BufferedReader(new InputStreamReader(inputStream)).readLine().trim();
 	
 	    // This will fail if the user enters an invalid authorization code.
 	    DbxAuthFinish authFinish = webAuth.finish(code);
