@@ -2,6 +2,7 @@ package com.davecoss.Dropbox;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,17 +48,6 @@ public class Plugin implements com.davecoss.java.plugin.StoragePlugin {
 	}
 	
 	@Override
-    public URI saveuri(InputStream input, int amount_to_write, URI uri) {
-    	try {
-			DbxEntry.File retval = FileUtils.upload_stream(input, amount_to_write, uri.getPath(), client);
-			return new URI("dbx:" + retval.path);
-    	} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-    }
-    
-    @Override
     public URI mkdir(String path) {
     	try {
 			DbxEntry.Folder retval = FileUtils.mkdir(path, client);
@@ -86,6 +76,46 @@ public class Plugin implements com.davecoss.java.plugin.StoragePlugin {
 	@Override
 	public String get_protocol() {
 		return "dbx";
+	}
+
+	@Override
+	public boolean isFile(URI uri) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean exists(URI uri) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public URI[] listFiles(URI uri) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public URI saveStream(InputStream input, int amount_to_write,
+			URI destination) throws PluginException {
+		try {
+			DbxEntry.File retval = FileUtils.upload_stream(input, amount_to_write, destination.getPath(), client);
+			return new URI("dbx:" + retval.path);
+    	} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public InputStream readStream(URI uri) throws PluginException {
+		throw new PluginException("Not yet implemented: readStream");
+	}
+
+	@Override
+	public OutputStream getOutputStream(URI uri) throws PluginException {
+		throw new PluginException("Not yet implemented: getOutputStream");
 	}
 
 }
