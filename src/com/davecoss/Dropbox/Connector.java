@@ -7,6 +7,12 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.Locale;
 
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import java.awt.Dimension;
+
 import com.davecoss.java.BuildInfo;
 import com.dropbox.core.DbxAppInfo;
 import com.dropbox.core.DbxAuthFinish;
@@ -17,33 +23,67 @@ import com.dropbox.core.DbxWebAuthNoRedirect;
 
 public class Connector {
 	
-    public static DbxClient connect(APIKeyStore apikey) throws IOException, DbxException {
-	return connect(apikey, System.out, System.in);
+    public static String get_auth_prompt(String authorizeUrl) {
+	return "1. Go to: " + authorizeUrl + "\n" 
+	    + "2. Click \"Allow\" (you might have to log in first)\n"
+	    + "3. Copy the authorization code.";
     }
 
-    public static DbxClient connect(APIKeyStore apikey, PrintStream consoleStream, InputStream inputStream) throws IOException, DbxException {
-		final String APP_KEY = apikey.APP_KEY;
-	    final String APP_SECRET = apikey.APP_SECRET;
-	    
-	    BuildInfo info = new BuildInfo(Connector.class);
+    public static DbxClient connect(APIKeyStore apikey, JDialog parent) throws IOException, DbxException {
+
+	BuildInfo info = new BuildInfo(Connector.class);
 	
-	    DbxAppInfo appInfo = new DbxAppInfo(APP_KEY, APP_SECRET);
+	DbxAppInfo appInfo = new DbxAppInfo(apikey.APP_KEY, apikey.APP_SECRET);
 	
-	    DbxRequestConfig config = new DbxRequestConfig("DropboxConnector/" + info.get_version(),
+	DbxRequestConfig config = new DbxRequestConfig("DropboxConnector/" + info.get_version(),
 						       Locale.getDefault().toString());
+	return new DbxClient(config, get_authorization(parent, appInfo, config).accessToken);
+    }
+
+    public static DbxAuthFinish get_authorization(PrintStream consoleStream, InputStream inputStream, DbxAppInfo appInfo, DbxRequestConfig config) throws DbxException, IOException {
 	    DbxWebAuthNoRedirect webAuth = new DbxWebAuthNoRedirect(config, appInfo);
 	
 	    // Have the user sign in and authorize your app.
 	    String authorizeUrl = webAuth.start();
-	    consoleStream.println("1. Go to: " + authorizeUrl);
-	    consoleStream.println("2. Click \"Allow\" (you might have to log in first)");
-	    consoleStream.println("3. Copy the authorization code.");
-	    String code = new BufferedReader(new InputStreamReader(inputStream)).readLine().trim();
-	
-	    // This will fail if the user enters an invalid authorization code.
-	    DbxAuthFinish authFinish = webAuth.finish(code);
-	
-	    return new DbxClient(config, authFinish.accessToken);
 
-	}
+	    consoleStream.println(get_auth_prompt(authorizeUrl));
+	    String code = new BufferedReader(new InputStreamReader(inputStream)).readLine().trim();
+
+	    // This will fail if the user enters an invalid authorization code.
+	     return webAuth.finish(code);
+
+    }
+
+  public static DbxAuthFinish get_authorization(JDialog parent, DbxAppInfo appInfo, DbxRequestConfig config) throws DbxException {
+	    DbxWebAuthNoRedirect webAuth = new DbxWebAuthNoRedirect(config, appInfo);
+	
+	    // Have the user sign in and authorize your app.
+	    String authorizeUrl = webAuth.start();
+
+	    String auth_prompt = get_auth_prompt(authorizeUrl);
+	    JTextArea text = new JTextArea(auth_prompt);
+	    text.setLineWrap(true);
+	    text.setWrapStyleWord(true);
+	    JScrollPane scrollpane = new JScrollPane(text);
+	    scrollpane.setPreferredSize(new Dimension(200, 200));
+	    String code = JOptionPane.showInputDialog(scrollpane);
+
+	    // This will fail if the user enters an invalid authorization code.
+	    return webAuth.finish(code);
+
+    }
+
+    public static DbxClient connect(APIKeyStore apikey, PrintStream consoleStream, InputStream inputStream) throws IOException, DbxException {
+
+	BuildInfo info = new BuildInfo(Connector.class);
+	
+	DbxAppInfo appInfo = new DbxAppInfo(apikey.APP_KEY, apikey.APP_SECRET);
+	
+	DbxRequestConfig config = new DbxRequestConfig("DropboxConnector/" + info.get_version(),
+						       Locale.getDefault().toString());
+
+	return new DbxClient(config, get_authorization(consoleStream, inputStream, appInfo, config).accessToken);
+	
+    }
+
 }

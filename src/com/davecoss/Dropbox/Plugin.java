@@ -3,9 +3,12 @@ package com.davecoss.Dropbox;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import javax.swing.JDialog;
 
 import com.dropbox.core.DbxClient;
 import com.dropbox.core.DbxEntry;
@@ -26,15 +29,25 @@ public class Plugin implements com.davecoss.java.plugin.StoragePlugin {
 			functionlist.add(function);
 		}
 	}
-	
-	@Override
-	public void init() throws PluginInitException {
+
+        @Override
+        public void init(PrintStream output, InputStream input) throws PluginInitException {
 		try {
-			client = Connector.connect(new APIKeyStore("appkey.properties"));
+		    client = Connector.connect(new APIKeyStore("appkey.properties"), output, input);
 		} catch (Exception e) {
 			throw new PluginInitException("Error creating Dropbox Client", e);
 		}
 	}
+
+        @Override
+        public void init(JDialog parent) throws PluginInitException {
+		try {
+		    client = Connector.connect(new APIKeyStore("appkey.properties"), parent);
+		} catch (Exception e) {
+			throw new PluginInitException("Error creating Dropbox Client", e);
+		}
+	}
+
 
 	@Override
 	public Collection<String> list_functions() throws PluginException {
