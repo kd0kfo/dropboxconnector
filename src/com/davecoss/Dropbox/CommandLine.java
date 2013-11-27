@@ -72,7 +72,7 @@ public class CommandLine {
     		sanity_check(args);
     		
 	        // Connect
-    		DbxClient client = Connector.connect(new APIKeyStore("appkey.properties"));
+    		DbxClient client = Connector.connect(new APIKeyStore("appkey.properties"), System.out, System.in);
 
 	        // Report with whom we're working
 	        System.out.println("Linked account: " + client.getAccountInfo().displayName);

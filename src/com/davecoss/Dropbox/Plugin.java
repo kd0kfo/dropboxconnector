@@ -150,12 +150,13 @@ public class Plugin implements com.davecoss.java.plugin.StoragePlugin {
 
 	@Override
 	public InputStream readStream(URI uri) throws PluginException {
-	    try {
-		DbxClient.Downloader downloader = client.startGetFile(uri.getPath(), null);
-		return new DropboxInputStream(downloader);
-	    } catch(DbxException de) {
-		throw new PluginException("Error starting download.", de);
-	    }
+		try {
+			DbxClient.Downloader downloader = client.startGetFile(
+					uri.getPath(), null);
+			return new DropboxInputStream(downloader);
+		} catch (DbxException de) {
+			throw new PluginException("Error starting download.", de);
+		}
 	}
 
 	@Override

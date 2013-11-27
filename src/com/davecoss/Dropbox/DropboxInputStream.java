@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import com.dropbox.core.DbxClient;
 import com.dropbox.core.DbxEntry;
-import com.dropbox.core.DbxException;
 
 public class DropboxInputStream extends InputStream {
 
