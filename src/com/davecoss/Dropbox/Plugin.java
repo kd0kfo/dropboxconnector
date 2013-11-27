@@ -5,13 +5,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.swing.JDialog;
 
 import com.dropbox.core.DbxClient;
 import com.dropbox.core.DbxEntry;
+import com.dropbox.core.DbxException;
+import com.dropbox.core.DbxWriteMode;
 
 import com.davecoss.java.plugin.PluginException;
 import com.davecoss.java.plugin.PluginInitException;
@@ -25,9 +29,6 @@ public class Plugin implements com.davecoss.java.plugin.StoragePlugin {
 	public Plugin() {
 		client = null;
 		functionlist = new ArrayList<String>();
-		for(String function : new String[]{"protocol_protocol", "saveuri", "mkdir"}) {
-			functionlist.add(function);
-		}
 	}
 
         @Override
@@ -62,7 +63,7 @@ public class Plugin implements com.davecoss.java.plugin.StoragePlugin {
 	
 	@Override
     public URI mkdir(String path) {
-    	try {
+	    try {
 			DbxEntry.Folder retval = FileUtils.mkdir(path, client);
 			return new URI("dbx:" + retval.path);
 		} catch (Exception e) {
@@ -93,20 +94,46 @@ public class Plugin implements com.davecoss.java.plugin.StoragePlugin {
 
 	@Override
 	public boolean isFile(URI uri) {
-		// TODO Auto-generated method stub
+	    try {
+		return client.getMetadata(uri.getPath()).isFile();
+	    } catch(DbxException de) {
 		return false;
+	    }
 	}
 
 	@Override
 	public boolean exists(URI uri) {
-		// TODO Auto-generated method stub
+	    try {
+		return client.getMetadata(uri.getPath()) != null;
+	    } catch(DbxException de) {
 		return false;
+	    }
 	}
 
 	@Override
 	public URI[] listFiles(URI uri) {
-		// TODO Auto-generated method stub
+	    DbxEntry.WithChildren dirents = null;
+	    try {
+		dirents = client.getMetadataWithChildren(uri.getPath());
+	    } catch(DbxException de) {
 		return null;
+	    }
+
+	    if(dirents == null || dirents.children.size() == 0)
+		return new URI[]{};
+	    
+	    URI[] retval = new URI[dirents.children.size()];
+	    Iterator<DbxEntry> dirent = dirents.children.iterator();
+	    int idx = 0;
+	    while(dirent.hasNext()) {
+		DbxEntry entry = dirent.next();
+		try {
+		    retval[idx++] = new URI("dbx:" + entry.path);
+		} catch(URISyntaxException urise) {
+		    return null;
+		}
+	    }
+	    return retval;
 	}
 
 	@Override
@@ -123,12 +150,18 @@ public class Plugin implements com.davecoss.java.plugin.StoragePlugin {
 
 	@Override
 	public InputStream readStream(URI uri) throws PluginException {
-		throw new PluginException("Not yet implemented: readStream");
+	    try {
+		DbxClient.Downloader downloader = client.startGetFile(uri.getPath(), null);
+		return new DropboxInputStream(downloader);
+	    } catch(DbxException de) {
+		throw new PluginException("Error starting download.", de);
+	    }
 	}
 
 	@Override
 	public OutputStream getOutputStream(URI uri) throws PluginException {
-		throw new PluginException("Not yet implemented: getOutputStream");
+	    DbxClient.Uploader uploader = client.startUploadFileChunked(uri.getPath(), DbxWriteMode.force(), -1);
+	    return new DropboxOutputStream(uploader);
 	}
 
 }

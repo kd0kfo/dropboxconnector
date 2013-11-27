@@ -68,10 +68,10 @@ public class FileUtils {
 		return dirents;
 	}
 	
-	public static DbxEntry.Folder mkdir(String dir, DbxClient client) throws DbxException {
-		DbxEntry.Folder retval = client.createFolder(dir);
-		if(retval == null)
-			retval = client.getMetadata(dir).asFolder();
-		return retval;
-	}
+    public static DbxEntry.Folder mkdir(String dir, DbxClient client) throws DbxException {
+	DbxEntry.Folder retval = client.createFolder(dir);
+	if(retval == null)
+	    retval = client.getMetadata(dir).asFolder();
+	return retval;
+    }
 }
