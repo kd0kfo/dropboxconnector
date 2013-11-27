@@ -4,7 +4,7 @@
 	    <format property="BUILD_TIME" pattern="yyyy-MM-dd HH:mm"/>
     </tstamp>
 
-  <property name="version" value="1.0"/>
+  <property name="version" value="1.0-beta"/>
   <property name="main.class.name" value="com.davecoss.Dropbox.CommandLine"/>
   <property name="plugin.class.name" value="com.davecoss.Dropbox.Plugin"/>
   <property name="build.classes.dir" value="build/classes"/>
