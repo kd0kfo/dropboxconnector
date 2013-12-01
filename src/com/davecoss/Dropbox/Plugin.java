@@ -64,6 +64,8 @@ public class Plugin implements com.davecoss.java.plugin.StoragePlugin {
 	@Override
     public URI mkdir(String path) {
 	    try {
+	    	if(path.charAt(path.length()-1) == '/')
+	    		path = path.substring(0,path.length()-1);
 			DbxEntry.Folder retval = FileUtils.mkdir(path, client);
 			return new URI("dbx:" + retval.path);
 		} catch (Exception e) {
