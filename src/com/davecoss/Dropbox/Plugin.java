@@ -165,7 +165,7 @@ public class Plugin implements com.davecoss.java.plugin.StoragePlugin {
 	}
 
 	@Override
-	public InputStream readStream(URI uri) throws PluginException {
+	public InputStream getInputStream(URI uri) throws PluginException {
 		try {
 			DbxClient.Downloader downloader = client.startGetFile(
 					clean_path(uri), null);
