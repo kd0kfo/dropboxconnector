@@ -1,6 +1,7 @@
 package com.davecoss.Dropbox;
 
 import java.io.BufferedReader;
+import java.io.Console;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,12 +27,15 @@ import com.davecoss.java.plugin.PluginInitException;
 public class Plugin implements com.davecoss.java.plugin.StoragePlugin {
 
 	private DbxClient client = null;
-	private final Collection<String> functionlist;
 	private File jarfile = null;
 	
 	public Plugin() {
 		client = null;
-		functionlist = new ArrayList<String>();
+	}
+
+	@Override
+	public void init(Console console) throws PluginInitException {
+		throw new UnsupportedOperationException("Console has not been implemented for Dropbox Plugin. Use PrintStream/InputStream init.");
 	}
 
         @Override
@@ -67,11 +71,6 @@ public class Plugin implements com.davecoss.java.plugin.StoragePlugin {
 
 
 	@Override
-	public Collection<String> list_functions() throws PluginException {
-		return functionlist;
-	}
-
-	@Override
 	public void destroy() throws PluginException  {
 		if(client != null)
 			client = null;
@@ -87,11 +86,6 @@ public class Plugin implements com.davecoss.java.plugin.StoragePlugin {
 			return null;
 		}
     }
-
-	@Override
-	public boolean has_function(String function_name) throws PluginException {
-		return functionlist != null && functionlist.contains(function_name);
-	}
 
 	@Override
 	public File get_jarfile() {
@@ -191,4 +185,5 @@ public class Plugin implements com.davecoss.java.plugin.StoragePlugin {
 		return path;
 	}
 
+	
 }
